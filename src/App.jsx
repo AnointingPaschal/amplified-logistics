@@ -79,11 +79,9 @@ function AppRoutes() {
         <Route path="/home" element={<RoleRedirect />} />
 
         {/* Customer */}
-        <Route path="/customer" element={
-          <ProtectedRoute allowedRoles={['customer']}>
-            <CustomerDashboard />
-          </ProtectedRoute>
-        } />
+        {/* Dashboard & create order — guests can browse, login required at submit */}
+        <Route path="/customer" element={<CustomerDashboard />} />
+        <Route path="/customer/orders/create" element={<CreateOrder />} />
         <Route path="/customer/orders" element={
           <ProtectedRoute allowedRoles={['customer']}>
             <CustomerOrders />
@@ -92,11 +90,6 @@ function AppRoutes() {
         <Route path="/customer/orders/:id" element={
           <ProtectedRoute allowedRoles={['customer']}>
             <OrderDetail />
-          </ProtectedRoute>
-        } />
-        <Route path="/customer/orders/create" element={
-          <ProtectedRoute allowedRoles={['customer']}>
-            <CreateOrder />
           </ProtectedRoute>
         } />
         <Route path="/customer/track/:id" element={

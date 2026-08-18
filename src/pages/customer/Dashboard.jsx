@@ -1,169 +1,178 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Package, MapPin, Clock, ChevronRight, Bike, Truck, Globe, Box, Zap, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bell, Menu, Wallet, ArrowRight, Bike, Layers, Truck, Globe, Package, ChevronUp } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { PageLayout } from '../../components/layout/AppShell';
-import { Card, StatusBadge, Avatar, Btn } from '../../components/ui';
-import { formatCurrency, timeAgo } from '../../utils/mockData';
 import LiveMap from '../../components/map/LiveMap';
+import { formatCurrency } from '../../utils/mockData';
 
-const SERVICES = [
-  { id: 'standard', icon: <Bike size={20} />, label: 'Standard', sub: 'Up to 5kg', color: 'bg-orange-100 text-orange-600', to: '/customer/create?type=standard' },
-  { id: 'bulk', icon: <Box size={20} />, label: 'Bulk', sub: '4+ stops', color: 'bg-purple-100 text-purple-600', to: '/customer/create?type=bulk' },
-  { id: 'heavy', icon: <Truck size={20} />, label: 'Heavy', sub: 'Furniture', color: 'bg-pink-100 text-pink-600', to: '/customer/create?type=heavy' },
-  { id: 'interstate', icon: <Globe size={20} />, label: 'Interstate', sub: 'Nationwide', color: 'bg-cyan-100 text-cyan-600', to: '/customer/create?type=interstate' },
+const SERVICE_TYPES = [
+  {
+    id: 'standard',
+    icon: <Bike size={28} strokeWidth={1.5} />,
+    iconBg: 'bg-blue-50',
+    iconColor: 'text-navy-900',
+    title: 'Standard Packages',
+    desc: 'For lightweight items and packages',
+    limit: 'Max 3 Locations',
+  },
+  {
+    id: 'bulk',
+    icon: <Layers size={28} strokeWidth={1.5} />,
+    iconBg: 'bg-amber-50',
+    iconColor: 'text-amber-700',
+    title: 'Bulk Packages',
+    desc: 'Fixed Price 4+ Locations',
+    limit: null,
+  },
+  {
+    id: 'heavy',
+    icon: <Truck size={28} strokeWidth={1.5} />,
+    iconBg: 'bg-slate-100',
+    iconColor: 'text-slate-700',
+    title: 'Heavy Items & Relocation',
+    desc: 'For big loads, relocation, home moves, or carrying heavy stuff',
+    limit: null,
+  },
+  {
+    id: 'interstate',
+    icon: <Globe size={28} strokeWidth={1.5} />,
+    iconBg: 'bg-green-50',
+    iconColor: 'text-green-700',
+    title: 'Inter-State',
+    desc: 'Move packages nationwide, stress free.',
+    limit: null,
+  },
 ];
 
 export default function CustomerDashboard() {
-  const { user, myOrders, riders, wallet } = useApp();
+  const { user, wallet } = useApp();
   const navigate = useNavigate();
+  const [sheetExpanded, setSheetExpanded] = useState(false);
 
-  const activeOrders = myOrders.filter(o => !['delivered', 'cancelled'].includes(o.status));
-  const recentOrders = myOrders.slice(0, 3);
-  const onlineRiders = riders.filter(r => r.online);
+  const handleServiceSelect = (type) => {
+    navigate(`/customer/orders/create?type=${type.id}`);
+  };
+
+  const initials = user?.name
+    ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : 'CO';
+
+  const firstName = user?.name?.split(' ')[0] || 'there';
 
   return (
-    <PageLayout>
-      {/* Hero greeting */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 -mx-4 -mt-3 px-5 pt-5 pb-8 mb-4 relative overflow-hidden">
-        <div className="absolute -top-6 -right-6 w-32 h-32 bg-orange-500/10 rounded-full" />
-        <div className="flex items-center justify-between mb-5 relative">
-          <div className="flex items-center gap-3">
-            <Avatar name={user?.name} size={42} />
-            <div>
-              <p className="text-slate-400 text-xs">Good morning</p>
-              <h2 className="text-white font-bold text-base">{user?.name?.split(' ')[0]}</h2>
-            </div>
-          </div>
-          <Link to="/customer/wallet" className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
-            <Zap size={14} className="text-orange-400" />
-            <span className="text-white text-sm font-bold">{formatCurrency(wallet.balance)}</span>
-          </Link>
-        </div>
+    <div className="relative h-dvh overflow-hidden bg-navy-900">
 
-        {/* Active order quick status */}
-        {activeOrders.length > 0 && (
-          <Link to="/customer/track" className="block bg-white/10 backdrop-blur rounded-2xl p-4 border border-white/20">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400 font-medium">Active Order</span>
-              <StatusBadge status={activeOrders[0].status} />
-            </div>
-            <p className="text-white font-semibold text-sm mb-1">#{activeOrders[0].trackingId}</p>
-            <div className="flex items-center gap-2 text-slate-400 text-xs">
-              <MapPin size={12} /> {activeOrders[0].dropoff}
-            </div>
-            <div className="flex items-center gap-2 mt-3 text-xs text-orange-300 font-medium">
-              <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" /> Track live →
-            </div>
-          </Link>
-        )}
-      </div>
-
-      {/* Services Grid */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold text-slate-800">Send a Package</h3>
-          <Link to="/customer/create" className="text-xs text-orange-500 font-semibold">See all →</Link>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          {SERVICES.map(s => (
-            <Link key={s.id} to={s.to} className="flex flex-col items-center gap-2 p-3 bg-white rounded-2xl border border-slate-100 hover:border-orange-200 hover:shadow-sm transition-all active:scale-95">
-              <div className={`p-2.5 rounded-xl ${s.color}`}>{s.icon}</div>
-              <div className="text-center">
-                <div className="text-xs font-bold text-slate-700">{s.label}</div>
-                <div className="text-[10px] text-slate-400">{s.sub}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Live Map */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold text-slate-800">Riders Near You</h3>
-          <span className="text-xs text-green-600 font-semibold bg-green-50 px-2 py-1 rounded-full">{onlineRiders.length} online</span>
-        </div>
-        <LiveMap height="200px" riders={riders} />
-      </div>
-
-      {/* Quick actions */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        <Link to="/customer/create" className="flex items-center gap-3 bg-orange-500 text-white rounded-2xl p-4 hover:bg-orange-600 active:scale-95 transition-all">
-          <div className="p-2 bg-white/20 rounded-xl"><Plus size={18} /></div>
-          <div>
-            <div className="font-bold text-sm">New Order</div>
-            <div className="text-xs opacity-75">Book delivery</div>
-          </div>
-        </Link>
-        <Link to="/customer/track" className="flex items-center gap-3 bg-slate-900 text-white rounded-2xl p-4 hover:bg-slate-800 active:scale-95 transition-all">
-          <div className="p-2 bg-white/20 rounded-xl"><MapPin size={18} /></div>
-          <div>
-            <div className="font-bold text-sm">Track Order</div>
-            <div className="text-xs opacity-75">Live tracking</div>
-          </div>
-        </Link>
-      </div>
-
-      {/* Recent Orders */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold text-slate-800">Recent Orders</h3>
-          <Link to="/customer/orders" className="text-xs text-orange-500 font-semibold">View all →</Link>
-        </div>
-        {recentOrders.length === 0 ? (
-          <Card className="p-8 text-center">
-            <Package size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No orders yet. Start your first delivery!</p>
-            <Btn className="mt-4 mx-auto" size="sm" onClick={() => navigate('/customer/create')}>Book Now</Btn>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {recentOrders.map(order => (
-              <Link key={order.id} to={`/customer/orders/${order.id}`}>
-                <Card className="p-4 flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${order.status === 'delivered' ? 'bg-green-100' : order.status === 'cancelled' ? 'bg-red-100' : 'bg-orange-100'}`}>
-                    <Package size={18} className={order.status === 'delivered' ? 'text-green-600' : order.status === 'cancelled' ? 'text-red-500' : 'text-orange-500'} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-slate-800">#{order.trackingId}</span>
-                      <StatusBadge status={order.status} />
-                    </div>
-                    <p className="text-xs text-slate-500 mt-0.5 truncate">{order.dropoff}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-slate-400">{timeAgo(order.createdAt)}</span>
-                      <span className="text-xs font-bold text-slate-700">{formatCurrency(order.price)}</span>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} className="text-slate-400 flex-shrink-0" />
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Promo Banner */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-4 text-white flex items-center justify-between mb-4">
-        <div>
-          <div className="text-xs font-semibold opacity-80 mb-1">NEW USER OFFER</div>
-          <div className="font-black text-lg">50% OFF</div>
-          <div className="text-xs opacity-80">Use code: FIRST50</div>
-        </div>
-        <div className="text-5xl opacity-30">🎁</div>
-      </div>
-
-      {/* Referral */}
-      <Card className="p-4 border-orange-100 bg-orange-50 mb-4">
+      {/* ── TOP BAR ─────────────────────────────── */}
+      <div className="absolute top-0 left-0 right-0 z-30 bg-navy-900 px-4 pt-10 pb-4">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-bold text-slate-800">Invite friends, earn ₦500</p>
-            <p className="text-xs text-slate-500 mt-0.5">Your code: <strong className="text-orange-600">{user?.referralCode}</strong></p>
+          {/* Avatar + greeting */}
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-full bg-slate-600 flex items-center justify-center border-2 border-white/20">
+              <span className="text-white font-bold text-sm">{initials}</span>
+            </div>
+            <div>
+              <p className="text-white/50 text-xs">Good Morning</p>
+              <p className="text-white font-bold text-sm leading-tight">{user?.name || 'Guest User'}</p>
+            </div>
           </div>
-          <Btn variant="outline" size="sm" onClick={() => navigator.share?.({ title: 'Amplified Logistics', text: `Use my code ${user?.referralCode} for 50% off!` })}>Share</Btn>
+          {/* Actions */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => navigate('/notifications')}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10"
+            >
+              <Bell size={20} />
+            </button>
+            <button className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10">
+              <Menu size={20} />
+            </button>
+          </div>
         </div>
-      </Card>
-    </PageLayout>
+      </div>
+
+      {/* ── MAP ─────────────────────────────────── */}
+      <div className="absolute inset-0 top-[80px]" style={{ bottom: sheetExpanded ? '70%' : '44%' }}>
+        <LiveMap height="100%" showRoute={false} />
+      </div>
+
+      {/* ── WALLET PROMO CARD ───────────────────── */}
+      <div className="absolute top-[92px] left-4 right-4 z-20 bg-white rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg">
+        <div className="w-10 h-10 bg-navy-900 rounded-xl flex items-center justify-center flex-shrink-0">
+          <Wallet size={18} className="text-white" />
+        </div>
+        <p className="flex-1 text-xs text-slate-600 leading-snug">
+          Your one-stop solution for hassle-free orders.
+        </p>
+        <button
+          onClick={() => navigate(user ? '/customer/wallet' : '/login')}
+          className="bg-blue-600 text-white text-xs font-semibold px-3 py-2 rounded-lg flex-shrink-0"
+        >
+          {user ? `${formatCurrency(wallet?.balance || 0)}` : 'Activate'}
+        </button>
+      </div>
+
+      {/* ── BOTTOM SHEET ────────────────────────── */}
+      <div
+        className="absolute left-0 right-0 bottom-0 z-20 bg-white rounded-t-3xl shadow-2xl transition-all duration-300"
+        style={{ height: sheetExpanded ? '72%' : '46%' }}
+      >
+        {/* Drag handle */}
+        <button
+          onClick={() => setSheetExpanded(!sheetExpanded)}
+          className="w-full flex flex-col items-center pt-3 pb-1"
+        >
+          <div className="w-10 h-1 bg-slate-200 rounded-full" />
+          <ChevronUp
+            size={16}
+            className={`text-slate-400 mt-1 transition-transform ${sheetExpanded ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {/* Service list */}
+        <div className="overflow-y-auto h-full pb-6">
+          {SERVICE_TYPES.map((s, i) => (
+            <button
+              key={s.id}
+              onClick={() => handleServiceSelect(s)}
+              className={`w-full flex items-center gap-4 px-5 py-4 text-left active:bg-slate-50 transition-colors ${
+                i < SERVICE_TYPES.length - 1 ? 'border-b border-slate-100' : ''
+              }`}
+            >
+              {/* Icon box */}
+              <div className={`w-14 h-14 ${s.iconBg} rounded-2xl flex items-center justify-center flex-shrink-0 ${s.iconColor}`}>
+                {s.icon}
+              </div>
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-navy-900 text-sm">{s.title}</p>
+                <p className="text-xs text-slate-500 leading-snug mt-0.5">{s.desc}</p>
+                {s.limit && (
+                  <p className="text-xs text-orange-500 font-semibold mt-1">{s.limit}</p>
+                )}
+              </div>
+              {/* Arrow */}
+              <ArrowRight size={18} className="text-slate-400 flex-shrink-0" />
+            </button>
+          ))}
+
+          {/* Login prompt for guests */}
+          {!user && (
+            <div className="mx-5 mt-4 bg-navy-900 rounded-2xl p-4 flex items-center gap-3">
+              <Package size={20} className="text-white flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-white text-xs font-semibold">Login to track & manage orders</p>
+                <p className="text-white/60 text-xs mt-0.5">Create account in 30 seconds</p>
+              </div>
+              <button
+                onClick={() => navigate('/login')}
+                className="bg-white text-navy-900 text-xs font-bold px-3 py-2 rounded-lg flex-shrink-0"
+              >
+                Login
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
