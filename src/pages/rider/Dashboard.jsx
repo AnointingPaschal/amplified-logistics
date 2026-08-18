@@ -7,7 +7,11 @@ import { formatCurrency, timeAgo } from '../../utils/mockData';
 import LiveMap from '../../components/map/LiveMap';
 
 export default function RiderDashboard() {
-  const { user, orders, updateOrderStatus, toggleRiderOnline, chat, sendChatMessage, showToast, wallet } = useApp();
+  const { user, orders = [], showToast, wallet } = useApp();
+  const updateOrderStatus = () => {};
+  const toggleRiderOnline = () => {};
+  const chat = [];
+  const sendChatMessage = () => {};
   const [online, setOnline] = useState(user?.online || false);
   const [chatModal, setChatModal] = useState(false);
   const [proofModal, setProofModal] = useState(null);

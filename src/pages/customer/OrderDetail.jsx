@@ -18,7 +18,7 @@ const STATUS_ORDER = ['pending', 'accepted', 'pickup', 'transit', 'delivered'];
 export default function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { myOrders, showToast, cancelOrder } = useApp();
+  const { orders: myOrders = [], showToast, cancelOrder } = useApp();
 
   const allOrders = myOrders?.length ? myOrders : MOCK_ORDERS;
   const order = allOrders.find(o => o.id === id || o.trackingId === id) || MOCK_ORDERS[0];

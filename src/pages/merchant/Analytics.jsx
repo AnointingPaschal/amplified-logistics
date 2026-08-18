@@ -19,7 +19,7 @@ const statusData = [
 ];
 
 export default function MerchantAnalytics() {
-  const { myOrders } = useApp();
+  const { orders: myOrders = [] } = useApp();
   const totalRevenue = monthData.reduce((s, d) => s + d.revenue, 0);
 
   return (

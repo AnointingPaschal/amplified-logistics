@@ -44,7 +44,7 @@ const topRiders = [
 const COLORS = ['#22C55E', '#F97316', '#3B82F6', '#EF4444'];
 
 export default function AdminAnalytics() {
-  const { allOrders } = useApp();
+  const { orders: allOrders = [] } = useApp();
   const [period, setPeriod] = useState('7D');
 
   const orders = allOrders?.length ? allOrders : MOCK_ORDERS;

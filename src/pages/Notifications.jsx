@@ -11,7 +11,7 @@ const NOTIF_ICONS = {
 };
 
 export default function Notifications() {
-  const { notifications, markNotificationsRead } = useApp();
+  const { notifications, markAllRead } = useApp();
 
   return (
     <PageLayout title="Notifications" back>

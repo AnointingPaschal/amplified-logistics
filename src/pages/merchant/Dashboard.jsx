@@ -13,7 +13,7 @@ const chartData = [
 ];
 
 export default function MerchantDashboard() {
-  const { user, myOrders, createOrder, showToast } = useApp();
+  const { user, orders: myOrders = [], submitOrder: createOrder, showToast } = useApp();
   const navigate = useNavigate();
 
   const stats = [

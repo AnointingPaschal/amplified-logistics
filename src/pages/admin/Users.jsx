@@ -21,7 +21,9 @@ const roleBadgeColor = {
 };
 
 export default function AdminUsers() {
-  const { riders: ctxRiders, verifyRider, showToast } = useApp();
+  const { showToast } = useApp();
+  const ctxRiders = [];
+  const verifyRider = () => {};
   const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);

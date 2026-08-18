@@ -7,7 +7,7 @@ import { Card, StatusBadge, Btn, Modal, Input, Select, EmptyState } from '../../
 import { formatCurrency, timeAgo, PACKAGE_TYPES } from '../../utils/mockData';
 
 export default function MerchantOrders() {
-  const { myOrders, createOrder, user, showToast } = useApp();
+  const { orders: myOrders = [], submitOrder: createOrder, user, showToast } = useApp();
   const navigate = useNavigate();
   const [createModal, setCreateModal] = useState(false);
   const [bulkRows, setBulkRows] = useState([{ pickup: '', dropoff: '', description: '', weight: '1' }]);

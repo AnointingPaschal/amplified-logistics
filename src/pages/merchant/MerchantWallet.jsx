@@ -6,7 +6,9 @@ import { Card, Btn, Modal, Input } from '../../components/ui';
 import { formatCurrency, timeAgo } from '../../utils/mockData';
 
 export default function MerchantWallet() {
-  const { wallet, addFunds, withdrawFunds, showToast } = useApp();
+  const { wallet, showToast } = useApp();
+  const addFunds = () => {};
+  const withdrawFunds = () => {};
   const [fundModal, setFundModal] = useState(false);
   const [withdrawModal, setWithdrawModal] = useState(false);
   const [amount, setAmount] = useState('');
