@@ -11,6 +11,7 @@ export function AppProvider({ children }) {
   const [orders, setOrders]             = useState([])
   const [notifications, setNotifications] = useState([])
   const [toast, setToast]               = useState(null)
+  const [sidebarOpen, setSidebarOpen]     = useState(false)
   const [loading, setLoading]           = useState(true)
 
   const showToast = useCallback((message, type = 'info') => {
@@ -99,6 +100,7 @@ export function AppProvider({ children }) {
   const value = {
     user, profile, wallet, orders, notifications, unreadCount, toast,
     loading, showToast,
+    sidebarOpen, openSidebar: () => setSidebarOpen(true), closeSidebar: () => setSidebarOpen(false),
     login, signup, logout,
     submitOrder, refreshOrders, cancelOrder: doCancel, markAllRead,
     setWallet,

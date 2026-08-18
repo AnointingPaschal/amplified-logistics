@@ -41,6 +41,7 @@ import AdminAnalytics from './pages/admin/Analytics'
 
 // Shared
 import Notifications from './pages/Notifications'
+import Sidebar from './components/layout/Sidebar'
 
 function Protected({ children, roles }) {
   const { user, loading } = useApp()
@@ -62,10 +63,16 @@ function ToastLayer() {
   return toast ? <Toast message={toast.message} type={toast.type}/> : null
 }
 
+function GlobalSidebar() {
+  const { sidebarOpen, closeSidebar } = useApp()
+  return <Sidebar open={sidebarOpen} onClose={closeSidebar}/>
+}
+
 function AppRoutes() {
   return (
     <>
       <ToastLayer/>
+      <GlobalSidebar/>
       <Routes>
         {/* Public / Guest */}
         <Route path="/" element={<CustomerDashboard/>}/>

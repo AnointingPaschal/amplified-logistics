@@ -5,7 +5,6 @@ import {
   Package, Search, MapPin, Clock, ChevronUp, ChevronDown, Navigation
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
-import Sidebar from '../../components/layout/Sidebar'
 import LiveMap from '../../components/map/LiveMap'
 import { formatCurrency } from '../../utils/mockData'
 
@@ -54,10 +53,9 @@ const SERVICES = [
 ]
 
 export default function CustomerDashboard() {
-  const { user, wallet } = useApp()
+  const { user, wallet, openSidebar } = useApp()
   const navigate = useNavigate()
   const [expanded, setExpanded] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const sheetRef = useRef(null)
 
   const initials = user?.name
@@ -80,7 +78,7 @@ export default function CustomerDashboard() {
         <div className="flex items-center justify-between px-4 pt-3 pb-6">
           {/* Avatar + greeting */}
           <div className="flex items-center gap-2.5">
-            <button onClick={() => setSidebarOpen(true)} className="w-9 h-9 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm flex items-center justify-center">
+            <button onClick={() => openSidebar()} className="w-9 h-9 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm flex items-center justify-center">
               <span className="text-white font-black text-xs">{initials}</span>
             </button>
             <div>
@@ -244,7 +242,7 @@ export default function CustomerDashboard() {
         </div>
       </div>
       {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
+      <Sidebar open={sidebarOpen} onClose={() => () => {}}/>
     </div>
   )
 }
