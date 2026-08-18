@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Zap, MapPin, Shield, Clock, Star, Package, ArrowRight, Truck, Users, CheckCircle, Phone, Mail } from 'lucide-react';
+import { Zap, MapPin, Shield, Clock, Star, Package, ArrowRight, Truck, Users, CheckCircle, Phone, Mail, Layers, Globe, Bike } from 'lucide-react';
 
 export default function Landing() {
   return (
@@ -65,13 +65,13 @@ export default function Landing() {
           <h2 className="text-2xl font-black text-slate-900 mb-6">Choose your delivery type</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { icon: '🏍️', title: 'Standard', desc: 'Lightweight items up to 5kg', color: 'bg-orange-50 border-orange-100' },
-              { icon: '📦', title: 'Bulk', desc: 'Fixed price, 4+ locations', color: 'bg-purple-50 border-purple-100' },
-              { icon: '🚚', title: 'Heavy & Relocation', desc: 'Big loads & furniture', color: 'bg-pink-50 border-pink-100' },
-              { icon: '🗺️', title: 'Inter-State', desc: 'Nationwide delivery', color: 'bg-cyan-50 border-cyan-100' },
+              { icon: <Bike size={22} className="text-orange-500" />, iconBg: 'bg-orange-100', title: 'Standard', desc: 'Lightweight items up to 5kg', card: 'bg-orange-50 border-orange-100' },
+              { icon: <Layers size={22} className="text-purple-600" />, iconBg: 'bg-purple-100', title: 'Bulk', desc: 'Fixed price, 4+ locations', card: 'bg-purple-50 border-purple-100' },
+              { icon: <Truck size={22} className="text-pink-600" />, iconBg: 'bg-pink-100', title: 'Heavy & Relocation', desc: 'Big loads & furniture', card: 'bg-pink-50 border-pink-100' },
+              { icon: <Globe size={22} className="text-cyan-600" />, iconBg: 'bg-cyan-100', title: 'Inter-State', desc: 'Nationwide delivery', card: 'bg-cyan-50 border-cyan-100' },
             ].map(item => (
-              <div key={item.title} className={`${item.color} border rounded-2xl p-4`}>
-                <div className="text-3xl mb-2">{item.icon}</div>
+              <div key={item.title} className={`${item.card} border rounded-2xl p-4`}>
+                <div className={`w-10 h-10 ${item.iconBg} rounded-xl flex items-center justify-center mb-3`}>{item.icon}</div>
                 <div className="font-bold text-slate-800 text-sm">{item.title}</div>
                 <div className="text-xs text-slate-500 mt-0.5">{item.desc}</div>
               </div>
