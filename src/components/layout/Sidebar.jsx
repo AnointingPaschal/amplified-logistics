@@ -1,214 +1,188 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  X, Home, Package, MapPin, Wallet, User, Gift, LogOut, Bell,
-  Shield, BarChart2, Users, Settings, Headphones, Bookmark,
-  Star, ChevronRight, Bike, Store, LayoutDashboard, FileText, Zap
-} from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 
-/* ── Role-specific nav sections ─────────────────────── */
-const MENUS = {
-  customer: [
-    { section:'Deliveries', items:[
-      { icon:<Home size={17}/>,     label:'Home',         path:'/customer' },
-      { icon:<Package size={17}/>,  label:'My Orders',    path:'/customer/orders' },
-      { icon:<MapPin size={17}/>,   label:'Track Order',  path:'/customer/track' },
+// ── All menu data (no JSX at module level) ──────────────
+function getMenus(role, navigate, go, handleLogout) {
+  const customer = [
+    { group: 'Deliveries', items: [
+      { label: 'Home',          path: '/customer' },
+      { label: 'My Orders',     path: '/customer/orders' },
+      { label: 'Track Order',   path: '/customer/track' },
     ]},
-    { section:'Account', items:[
-      { icon:<Wallet size={17}/>,   label:'Wallet',       path:'/customer/wallet' },
-      { icon:<Bookmark size={17}/>, label:'Address Book', path:'/customer/addresses' },
-      { icon:<Bell size={17}/>,     label:'Notifications',path:'/notifications' },
+    { group: 'Account', items: [
+      { label: 'Wallet',        path: '/customer/wallet' },
+      { label: 'Address Book',  path: '/customer/addresses' },
+      { label: 'Notifications', path: '/notifications' },
     ]},
-    { section:'Rewards', items:[
-      { icon:<Gift size={17}/>,     label:'Refer & Earn', path:'/customer/referral', badge:'₦500' },
-      { icon:<Star size={17}/>,     label:'Promo Codes',  path:'/customer/promo' },
-      { icon:<Headphones size={17}/>,label:'Help Center', path:'/customer/support' },
+    { group: 'Rewards', items: [
+      { label: 'Refer & Earn',  path: '/customer/referral', badge: '₦500' },
+      { label: 'Promo Codes',   path: '/customer/promo' },
+      { label: 'Help Center',   path: '/customer/support' },
     ]},
-  ],
-  rider: [
-    { section:'Work', items:[
-      { icon:<Home size={17}/>,     label:'Dashboard',    path:'/rider' },
-      { icon:<Package size={17}/>,  label:'Deliveries',   path:'/rider/deliveries' },
-      { icon:<MapPin size={17}/>,   label:'Map',          path:'/rider/map' },
-      { icon:<Wallet size={17}/>,   label:'Earnings',     path:'/rider/earnings' },
-      { icon:<User size={17}/>,     label:'My Profile',   path:'/rider/profile' },
+  ]
+  const rider = [
+    { group: 'Work', items: [
+      { label: 'Dashboard',     path: '/rider' },
+      { label: 'Deliveries',    path: '/rider/deliveries' },
+      { label: 'Map',           path: '/rider/map' },
+      { label: 'Earnings',      path: '/rider/earnings' },
+      { label: 'Profile',       path: '/rider/profile' },
     ]},
-    { section:'Support', items:[
-      { icon:<Bell size={17}/>,     label:'Notifications',path:'/notifications' },
-      { icon:<Headphones size={17}/>,label:'Help',        path:'/customer/support' },
+  ]
+  const merchant = [
+    { group: 'Business', items: [
+      { label: 'Dashboard',     path: '/merchant' },
+      { label: 'Orders',        path: '/merchant/orders' },
+      { label: 'Analytics',     path: '/merchant/analytics' },
+      { label: 'Wallet',        path: '/merchant/wallet' },
     ]},
-  ],
-  merchant: [
-    { section:'Business', items:[
-      { icon:<LayoutDashboard size={17}/>, label:'Dashboard', path:'/merchant' },
-      { icon:<Package size={17}/>,   label:'Orders',      path:'/merchant/orders' },
-      { icon:<BarChart2 size={17}/>, label:'Analytics',   path:'/merchant/analytics' },
-      { icon:<Wallet size={17}/>,    label:'Payments',    path:'/merchant/wallet' },
-      { icon:<Store size={17}/>,     label:'Profile',     path:'/merchant/profile' },
+  ]
+  const admin = [
+    { group: 'Admin', items: [
+      { label: 'Overview',      path: '/admin' },
+      { label: 'Live Map',      path: '/admin/map' },
+      { label: 'Orders',        path: '/admin/orders' },
+      { label: 'Users',         path: '/admin/users' },
+      { label: 'Analytics',     path: '/admin/analytics' },
     ]},
-  ],
-  admin: [
-    { section:'Admin', items:[
-      { icon:<LayoutDashboard size={17}/>, label:'Overview',  path:'/admin' },
-      { icon:<MapPin size={17}/>,    label:'Live Map',     path:'/admin/map' },
-      { icon:<Package size={17}/>,   label:'All Orders',   path:'/admin/orders' },
-      { icon:<Users size={17}/>,     label:'Users',        path:'/admin/users' },
-      { icon:<BarChart2 size={17}/>, label:'Analytics',    path:'/admin/analytics' },
+  ]
+  const guest = [
+    { group: 'Get Started', items: [
+      { label: 'Home',                path: '/' },
+      { label: 'Send a Package',      path: '/customer/orders/create?type=standard' },
+      { label: 'Track an Order',      path: '/customer/track' },
+      { label: 'Help Center',         path: '/customer/support' },
     ]},
-  ],
+  ]
+  const map = { customer, rider, merchant, admin }
+  return map[role] || guest
 }
 
-const GUEST_MENU = [
-  { section:'Get Started', items:[
-    { icon:<Home size={17}/>,      label:'Home',           path:'/' },
-    { icon:<Package size={17}/>,   label:'Send a Package', path:'/customer/orders/create?type=standard' },
-    { icon:<MapPin size={17}/>,    label:'Track an Order', path:'/customer/track' },
-    { icon:<Headphones size={17}/>,label:'Help Center',    path:'/customer/support' },
-  ]},
-]
-
-/* ── Main Sidebar (right drawer) ────────────────────── */
-export default function Sidebar({ open, onClose }) {
+// ── Sidebar component ────────────────────────────────────
+const AppSidebar = function({ open, onClose }) {
   const { user, logout, showToast } = useApp()
   const navigate = useNavigate()
-  const role = user?.user_metadata?.role || user?.role || 'customer'
-  const sections = user ? (MENUS[role] || MENUS.customer) : GUEST_MENU
-  const initials = (user?.user_metadata?.name || user?.email || 'G')
-    .split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 
-  // Lock body scroll when open
-  useEffect(() => {
+  const role = (user && (user.user_metadata?.role || user.role)) || 'customer'
+  const name = (user && (user.user_metadata?.name || user.email?.split('@')[0])) || 'Guest'
+  const email = (user && user.email) || ''
+  const initials = name.split(' ').map(function(n) { return n[0] }).join('').slice(0, 2).toUpperCase()
+
+  useEffect(function() {
     document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
+    return function() { document.body.style.overflow = '' }
   }, [open])
 
-  const go = (path) => {
-    if (!path) { showToast('Coming soon!', 'info'); return }
+  function go(path) {
     onClose()
-    setTimeout(() => navigate(path), 200)
+    setTimeout(function() { navigate(path) }, 180)
   }
 
-  const handleLogout = async () => {
+  function handleLogout() {
     onClose()
-    await logout()
-    navigate('/')
-    showToast('Logged out', 'info')
+    logout().then(function() {
+      navigate('/')
+      showToast('Logged out', 'info')
+    }).catch(function() {
+      navigate('/')
+    })
+  }
+
+  const sections = getMenus(role)
+
+  // Backdrop
+  const backdropStyle = {
+    position: 'fixed', inset: 0, zIndex: 9998,
+    background: 'rgba(0,0,0,0.55)',
+    opacity: open ? 1 : 0,
+    pointerEvents: open ? 'auto' : 'none',
+    transition: 'opacity 0.25s ease',
+  }
+
+  // Drawer
+  const drawerStyle = {
+    position: 'fixed', top: 0, right: 0, bottom: 0,
+    width: '82%', maxWidth: 320, zIndex: 9999,
+    background: '#fff',
+    boxShadow: '-8px 0 40px rgba(0,0,0,0.2)',
+    transform: open ? 'translateX(0)' : 'translateX(100%)',
+    transition: 'transform 0.28s cubic-bezier(0.32,0,0.67,0)',
+    display: 'flex', flexDirection: 'column',
+    overflowY: 'auto',
+  }
+
+  const headerStyle = {
+    background: '#0A1628',
+    padding: '40px 20px 20px',
+    flexShrink: 0,
   }
 
   return (
-    <>
-      {/* ── Backdrop ── */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 998,
-          background: 'rgba(0,0,0,0.55)',
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? 'auto' : 'none',
-          transition: 'opacity 0.25s ease',
-        }}
-      />
+    <div>
+      <div style={backdropStyle} onClick={onClose} />
+      <div style={drawerStyle}>
 
-      {/* ── Drawer (right side) ── */}
-      <div
-        style={{
-          position: 'fixed', top: 0, right: 0, bottom: 0,
-          width: '82%', maxWidth: 320,
-          zIndex: 999,
-          background: '#fff',
-          boxShadow: '-8px 0 40px rgba(0,0,0,0.18)',
-          transform: open ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.28s cubic-bezier(0.32,0,0.67,0)',
-          display: 'flex', flexDirection: 'column',
-          overflowY: 'auto',
-        }}
-      >
         {/* Header */}
-        <div style={{ background: '#0A1628', padding: '40px 20px 20px', flexShrink: 0 }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom: 16 }}>
-            <div style={{ display:'flex', alignItems:'center', gap: 12 }}>
-              <div style={{ width:48, height:48, borderRadius:14, background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <span style={{ color:'#fff', fontWeight:900, fontSize:16 }}>{initials}</span>
+        <div style={headerStyle}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ color: '#fff', fontWeight: 900, fontSize: 15 }}>{initials}</span>
               </div>
-              {user ? (
-                <div>
-                  <p style={{ color:'#fff', fontWeight:700, fontSize:14, lineHeight:1.2 }}>
-                    {user.user_metadata?.name || user.email?.split('@')[0]}
-                  </p>
-                  <p style={{ color:'rgba(255,255,255,0.5)', fontSize:11, marginTop:2 }}>{user.email}</p>
-                  <span style={{ background:'rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.7)', fontSize:10, padding:'2px 8px', borderRadius:20, display:'inline-block', marginTop:4, textTransform:'capitalize' }}>{role}</span>
-                </div>
-              ) : (
-                <div>
-                  <p style={{ color:'#fff', fontWeight:900, fontSize:16 }}>amplified</p>
-                  <p style={{ color:'rgba(255,255,255,0.5)', fontSize:11 }}>Sign in to manage orders</p>
-                </div>
-              )}
+              <div>
+                <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, margin: 0 }}>{name}</p>
+                {email && <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, margin: '2px 0 0' }}>{email}</p>}
+                <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)', fontSize: 10, padding: '2px 8px', borderRadius: 20, marginTop: 4, textTransform: 'capitalize' }}>{user ? role : 'guest'}</span>
+              </div>
             </div>
-            <button onClick={onClose} style={{ width:32, height:32, borderRadius:'50%', background:'rgba(255,255,255,0.1)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0 }}>
-              <X size={16} color="rgba(255,255,255,0.8)"/>
+            <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, color: '#fff', fontSize: 18, lineHeight: 1 }}>
+              ×
             </button>
           </div>
 
           {!user && (
-            <div style={{ display:'flex', gap:8 }}>
-              <button onClick={() => go('/login')}
-                style={{ flex:1, background:'rgba(255,255,255,0.12)', color:'#fff', fontWeight:700, fontSize:12, padding:'10px 0', borderRadius:12, border:'none', cursor:'pointer' }}>
-                Login
-              </button>
-              <button onClick={() => go('/signup')}
-                style={{ flex:1, background:'#fff', color:'#0A1628', fontWeight:800, fontSize:12, padding:'10px 0', borderRadius:12, border:'none', cursor:'pointer' }}>
-                Sign Up
-              </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={function() { go('/login') }} style={{ flex: 1, background: 'rgba(255,255,255,0.12)', color: '#fff', fontWeight: 700, fontSize: 12, padding: '10px 0', borderRadius: 12, border: 'none', cursor: 'pointer' }}>Login</button>
+              <button onClick={function() { go('/signup') }} style={{ flex: 1, background: '#fff', color: '#0A1628', fontWeight: 800, fontSize: 12, padding: '10px 0', borderRadius: 12, border: 'none', cursor: 'pointer' }}>Sign Up</button>
             </div>
           )}
         </div>
 
-        {/* Nav */}
-        <div style={{ flex:1, overflowY:'auto', padding:'8px 0' }}>
-          {sections.map(sec => (
-            <div key={sec.section}>
-              <p style={{ fontSize:10, fontWeight:800, color:'#9CA3AF', textTransform:'uppercase', letterSpacing:'0.08em', padding:'12px 20px 6px' }}>
-                {sec.section}
-              </p>
-              {sec.items.map(item => (
-                <button key={item.label} onClick={() => go(item.path)}
-                  style={{ width:'100%', display:'flex', alignItems:'center', gap:12, padding:'12px 20px', background:'none', border:'none', cursor:'pointer', textAlign:'left', transition:'background 0.1s' }}
-                  onMouseEnter={e => e.currentTarget.style.background='#F9FAFB'}
-                  onMouseLeave={e => e.currentTarget.style.background='none'}
-                >
-                  <div style={{ width:36, height:36, borderRadius:10, background:'#F3F4F6', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, color:'#4B5563' }}>
-                    {item.icon}
-                  </div>
-                  <span style={{ flex:1, fontSize:14, fontWeight:600, color:'#111827' }}>{item.label}</span>
-                  {item.badge && (
-                    <span style={{ background:'#DCFCE7', color:'#166534', fontSize:10, fontWeight:800, padding:'2px 8px', borderRadius:20 }}>{item.badge}</span>
-                  )}
-                  <ChevronRight size={14} color="#D1D5DB"/>
-                </button>
-              ))}
-            </div>
-          ))}
+        {/* Nav items */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+          {sections.map(function(sec) {
+            return (
+              <div key={sec.group}>
+                <p style={{ fontSize: 10, fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '12px 20px 6px', margin: 0 }}>{sec.group}</p>
+                {sec.items.map(function(item) {
+                  return (
+                    <button key={item.label} onClick={function() { go(item.path) }}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 20px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{item.label}</span>
+                      {item.badge && <span style={{ background: '#DCFCE7', color: '#166534', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 20 }}>{item.badge}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )
+          })}
         </div>
 
         {/* Footer */}
-        <div style={{ borderTop:'1px solid #F3F4F6', padding:'8px 12px 24px', flexShrink:0 }}>
+        <div style={{ borderTop: '1px solid #F3F4F6', padding: '12px 12px 24px', flexShrink: 0 }}>
           {user && (
             <button onClick={handleLogout}
-              style={{ width:'100%', display:'flex', alignItems:'center', gap:12, padding:'12px', borderRadius:12, background:'none', border:'none', cursor:'pointer' }}
-              onMouseEnter={e => e.currentTarget.style.background='#FEF2F2'}
-              onMouseLeave={e => e.currentTarget.style.background='none'}
-            >
-              <div style={{ width:36, height:36, borderRadius:10, background:'#FEE2E2', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <LogOut size={16} color="#EF4444"/>
-              </div>
-              <span style={{ fontSize:14, fontWeight:700, color:'#EF4444' }}>Log Out</span>
+              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>↩</div>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#EF4444' }}>Log Out</span>
             </button>
           )}
-          <p style={{ textAlign:'center', fontSize:10, color:'#D1D5DB', marginTop:8 }}>Amplified Logistics v1.0</p>
+          <p style={{ textAlign: 'center', fontSize: 10, color: '#D1D5DB', marginTop: 8 }}>Amplified Logistics v1.0</p>
         </div>
       </div>
-    </>
+    </div>
   )
 }
+
+export default AppSidebar
