@@ -1,4 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import Sidebar from './Sidebar'
 import { Home, Package, MapPin, Wallet, User, LayoutDashboard, Truck, Users, Settings, BarChart2, Bell, ChevronLeft, Bike } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 
@@ -71,12 +73,14 @@ export function BottomNav() {
 export function TopBar({ title, back, backTo, right, transparent }) {
   const { user, unreadCount, markAllRead } = useApp()
   const navigate = useNavigate()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const bg = transparent
     ? 'bg-transparent'
     : 'bg-white/96 border-b border-gray-100 shadow-sm'
 
   return (
+    <>
     <div className={`sticky top-0 z-30 flex items-center justify-between px-4 py-3 ${bg}`}
       style={{ backdropFilter: 'blur(12px)' }}>
       <div className="flex items-center gap-2.5">
@@ -99,18 +103,28 @@ export function TopBar({ title, back, backTo, right, transparent }) {
       <div className="flex items-center gap-1.5">
         {right}
         {!back && (
-          <button onClick={()=>{ markAllRead?.(); navigate('/notifications') }}
-            className="relative w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <Bell size={16} className="text-gray-700"/>
-            {unreadCount>0 && (
-              <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 rounded-full text-[8px] text-white flex items-center justify-center font-black">
-                {unreadCount}
-              </span>
-            )}
-          </button>
+          <>
+            <button onClick={()=>{ markAllRead?.(); navigate('/notifications') }}
+              className="relative w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+              <Bell size={16} className="text-gray-700"/>
+              {unreadCount>0 && (
+                <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 rounded-full text-[8px] text-white flex items-center justify-center font-black">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setSidebarOpen(true)}
+              className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+          </>
         )}
       </div>
     </div>
+    <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
+    </>
   )
 }
 

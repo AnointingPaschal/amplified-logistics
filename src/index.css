@@ -78,3 +78,12 @@ input:focus, textarea:focus, select:focus {
 /* Navigation active */
 .nav-active { color: #0A1628; }
 .nav-dot    { width:4px; height:4px; border-radius:50%; background:#0A1628; margin:0 auto; margin-top:2px; }
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}

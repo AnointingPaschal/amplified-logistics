@@ -5,6 +5,7 @@ import {
   Package, Search, MapPin, Clock, ChevronUp, ChevronDown, Navigation
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
+import Sidebar from '../../components/layout/Sidebar'
 import LiveMap from '../../components/map/LiveMap'
 import { formatCurrency } from '../../utils/mockData'
 
@@ -56,6 +57,7 @@ export default function CustomerDashboard() {
   const { user, wallet } = useApp()
   const navigate = useNavigate()
   const [expanded, setExpanded] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const sheetRef = useRef(null)
 
   const initials = user?.name
@@ -241,6 +243,8 @@ export default function CustomerDashboard() {
           <div className="h-4" />
         </div>
       </div>
+      {/* Sidebar */}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
     </div>
   )
 }
