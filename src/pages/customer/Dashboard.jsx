@@ -1,8 +1,8 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Bell, Menu, Wallet, ArrowRight, Bike, Layers, Truck, Globe,
-  Package, Search, MapPin, Clock, ChevronUp, ChevronDown, Navigation
+  Package, Search, Clock, ChevronUp, ChevronDown, Navigation
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import LiveMap from '../../components/map/LiveMap'
@@ -10,45 +10,29 @@ import { formatCurrency } from '../../utils/mockData'
 
 const SERVICES = [
   {
-    id: 'standard',
+    id: 'standard', iconBg: 'bg-orange-500',
     icon: <Bike size={20} strokeWidth={1.6} />,
-    iconBg: 'bg-orange-500',
-    title: 'Standard Packages',
-    desc: 'Lightweight items & packages',
-    eta: '20–40 min',
-    price: '₦2,500',
-    limit: 'Max 3 Locations',
-    limitColor: 'text-orange-500',
+    title: 'Standard Packages', desc: 'Lightweight items & packages',
+    eta: '20–40 min', price: '₦2,500',
+    limit: 'Max 3 Locations', limitColor: 'text-orange-500',
   },
   {
-    id: 'bulk',
+    id: 'bulk', iconBg: 'bg-amber-500',
     icon: <Layers size={20} strokeWidth={1.6} />,
-    iconBg: 'bg-amber-500',
-    title: 'Bulk Packages',
-    desc: 'Fixed price, 4+ drop locations',
-    eta: '1–3 hrs',
-    price: '₦8,500',
-    limit: null,
+    title: 'Bulk Packages', desc: 'Fixed price, 4+ drop locations',
+    eta: '1–3 hrs', price: '₦8,500', limit: null,
   },
   {
-    id: 'heavy',
+    id: 'heavy', iconBg: 'bg-slate-700',
     icon: <Truck size={20} strokeWidth={1.6} />,
-    iconBg: 'bg-slate-700',
-    title: 'Heavy & Relocation',
-    desc: 'Furniture, big loads & home moves',
-    eta: 'Same day',
-    price: '₦25,000',
-    limit: null,
+    title: 'Heavy & Relocation', desc: 'Furniture, big loads & home moves',
+    eta: 'Same day', price: '₦25,000', limit: null,
   },
   {
-    id: 'interstate',
+    id: 'interstate', iconBg: 'bg-emerald-600',
     icon: <Globe size={20} strokeWidth={1.6} />,
-    iconBg: 'bg-emerald-600',
-    title: 'Inter-State',
-    desc: 'Nationwide delivery across Nigeria',
-    eta: '1–3 days',
-    price: '₦45,000',
-    limit: null,
+    title: 'Inter-State', desc: 'Nationwide delivery across Nigeria',
+    eta: '1–3 days', price: '₦45,000', limit: null,
   },
 ]
 
@@ -56,58 +40,73 @@ export default function CustomerDashboard() {
   const { user, wallet, openSidebar } = useApp()
   const navigate = useNavigate()
   const [expanded, setExpanded] = useState(false)
-  const sheetRef = useRef(null)
 
-  const initials = user?.name
-    ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-    : 'CO'
+  const initials = (user?.user_metadata?.name || user?.email || 'CO')
+    .split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 
   const SHEET_H = expanded ? '78%' : '50%'
 
   return (
-    <div className="relative bg-gray-900 overflow-hidden" style={{ height: '100dvh' }}>
+    <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden', background: '#111827' }}>
 
-      {/* ── MAP — fills entire screen ─────────────────────────── */}
-      <div className="absolute inset-0 z-0">
+      {/* MAP — full screen behind everything */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         <LiveMap height="100%" showRoute={false} />
       </div>
 
-      {/* ── FROSTED TOP BAR ──────────────────────────────────── */}
-      <div className="absolute top-0 left-0 right-0 z-20"
-        style={{ background: 'linear-gradient(to bottom, rgba(10,22,40,0.92) 0%, rgba(10,22,40,0.6) 80%, transparent 100%)' }}>
-        <div className="flex items-center justify-between px-4 pt-3 pb-6">
-          {/* Avatar + greeting */}
-          <div className="flex items-center gap-2.5">
-            <button onClick={() => openSidebar()} className="w-9 h-9 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm flex items-center justify-center">
-              <span className="text-white font-black text-xs">{initials}</span>
-            </button>
-            <div>
-              <p className="text-white/50 text-[10px] leading-none">Good Morning</p>
-              <p className="text-white font-bold text-sm">{user?.name || 'Guest User'}</p>
+      {/* TOP BAR — frosted gradient */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, zIndex: 20,
+        background: 'linear-gradient(to bottom, rgba(10,22,40,0.94) 0%, rgba(10,22,40,0.7) 75%, transparent 100%)',
+      }}>
+        {/* Avatar row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px 8px' }}>
+          {/* Left: avatar + greeting */}
+          <button
+            onClick={openSidebar}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1.5px solid rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ color: '#fff', fontWeight: 900, fontSize: 13 }}>{initials}</span>
             </div>
-          </div>
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, margin: 0, lineHeight: 1 }}>Good Morning</p>
+              <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, margin: '2px 0 0', lineHeight: 1 }}>
+                {user?.user_metadata?.name || 'Guest User'}
+              </p>
+            </div>
+          </button>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-1.5">
+          {/* Right: actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {user ? (
               <>
-                <button onClick={() => navigate('/notifications')}
-                  className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <Bell size={17} className="text-white/80" />
+                <button
+                  onClick={() => navigate('/notifications')}
+                  style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Bell size={17} color="rgba(255,255,255,0.85)" />
                 </button>
-                <button className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <Menu size={17} className="text-white/80" />
+                <button
+                  onClick={openSidebar}
+                  style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Menu size={17} color="rgba(255,255,255,0.85)" />
                 </button>
               </>
             ) : (
               <>
                 <button onClick={() => navigate('/login')}
-                  className="text-white/80 text-xs font-semibold px-3 py-1.5 rounded-xl hover:bg-white/10">
+                  style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: 600, padding: '7px 12px', borderRadius: 10, background: 'none', border: 'none', cursor: 'pointer' }}>
                   Login
                 </button>
                 <button onClick={() => navigate('/signup')}
-                  className="bg-white text-gray-900 text-xs font-black px-3 py-1.5 rounded-xl shadow-sm">
+                  style={{ background: '#fff', color: '#0A1628', fontSize: 12, fontWeight: 800, padding: '7px 14px', borderRadius: 10, border: 'none', cursor: 'pointer' }}>
                   Sign Up
+                </button>
+                <button onClick={openSidebar}
+                  style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Menu size={17} color="rgba(255,255,255,0.85)" />
                 </button>
               </>
             )}
@@ -115,134 +114,146 @@ export default function CustomerDashboard() {
         </div>
 
         {/* Search bar */}
-        <div className="px-4 pb-3">
-          <button onClick={() => navigate('/customer/orders/create?type=standard')}
-            className="w-full bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-xl">
-            <Search size={16} className="text-gray-400" />
-            <span className="text-gray-400 text-sm flex-1 text-left">Where are we delivering?</span>
-            <div className="w-7 h-7 bg-gray-900 rounded-xl flex items-center justify-center">
-              <Navigation size={13} className="text-white" />
+        <div style={{ padding: '0 16px 14px' }}>
+          <button
+            onClick={() => navigate('/customer/orders/create?type=standard')}
+            style={{ width: '100%', background: 'rgba(255,255,255,0.96)', borderRadius: 20, padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 10, border: 'none', cursor: 'pointer', boxShadow: '0 4px 24px rgba(0,0,0,0.18)' }}
+          >
+            <Search size={16} color="#9CA3AF" />
+            <span style={{ flex: 1, textAlign: 'left', fontSize: 14, color: '#9CA3AF' }}>Where are we delivering?</span>
+            <div style={{ width: 30, height: 30, background: '#0A1628', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Navigation size={14} color="#fff" />
             </div>
           </button>
         </div>
       </div>
 
-      {/* ── WALLET CARD (floating, map visible through) ─────── */}
-      <div className="absolute z-10 left-4 right-4"
-        style={{ top: 'calc(3rem + 100px)' }}>
+      {/* WALLET CARD — floating over map */}
+      <div style={{ position: 'absolute', top: 'calc(3.5rem + 88px)', left: 16, right: 16, zIndex: 10 }}>
         <button
           onClick={() => navigate(user ? '/customer/wallet' : '/login')}
-          className="w-full bg-white/90 backdrop-blur-md rounded-2xl px-4 py-2.5 flex items-center gap-3 shadow-2xl border border-white/40">
-          <div className="w-8 h-8 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Wallet size={14} className="text-white" />
+          style={{ width: '100%', background: 'rgba(255,255,255,0.92)', borderRadius: 18, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid rgba(255,255,255,0.4)', boxShadow: '0 8px 32px rgba(0,0,0,0.14)', cursor: 'pointer' }}
+        >
+          <div style={{ width: 34, height: 34, background: '#0A1628', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Wallet size={15} color="#fff" />
           </div>
-          <div className="flex-1 text-left">
-            <p className="text-xs text-gray-500">Amplified Wallet</p>
-            <p className="text-xs font-bold text-gray-900">
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <p style={{ fontSize: 11, color: '#6B7280', margin: 0 }}>Amplified Wallet</p>
+            <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', margin: '1px 0 0' }}>
               {user ? formatCurrency(wallet?.balance || 0) : 'Your one-stop logistics solution.'}
             </p>
           </div>
-          <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl">
+          <span style={{ background: '#2563EB', color: '#fff', fontSize: 12, fontWeight: 700, padding: '6px 14px', borderRadius: 10, flexShrink: 0 }}>
             {user ? 'Fund' : 'Activate'}
           </span>
         </button>
       </div>
 
-      {/* ── LOCATION INDICATOR ──────────────────────────────── */}
-      <div className="absolute bottom-0 right-4 z-20 flex flex-col gap-2"
-        style={{ bottom: `calc(${SHEET_H} + 16px)`, transition: 'bottom 0.35s cubic-bezier(.32,0,.67,0)' }}>
-        <button className="w-10 h-10 bg-white rounded-2xl shadow-xl flex items-center justify-center border border-gray-100">
-          <Navigation size={18} className="text-gray-700" />
+      {/* NAV FAB — bottom right, above sheet */}
+      <div style={{
+        position: 'absolute', right: 16, zIndex: 15,
+        bottom: `calc(${SHEET_H} + 16px)`,
+        transition: 'bottom 0.35s cubic-bezier(.32,0,.67,0)',
+      }}>
+        <button style={{ width: 42, height: 42, background: '#fff', borderRadius: 14, border: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', cursor: 'pointer' }}>
+          <Navigation size={18} color="#374151" />
         </button>
       </div>
 
-      {/* ── BOTTOM SHEET ─────────────────────────────────────── */}
-      <div
-        ref={sheetRef}
-        className="absolute left-0 right-0 bottom-0 z-20 flex flex-col"
-        style={{
-          height: SHEET_H,
-          transition: 'height 0.35s cubic-bezier(.32,0,.67,0)',
-        }}
-      >
-        {/* Frosted top portion (map visible through) */}
-        <div className="flex-shrink-0 bg-white/60 backdrop-blur-2xl rounded-t-3xl pt-2.5 pb-0 border-t border-white/50 shadow-2xl">
+      {/* BOTTOM SHEET */}
+      <div style={{
+        position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 20,
+        height: SHEET_H,
+        display: 'flex', flexDirection: 'column',
+        transition: 'height 0.35s cubic-bezier(.32,0,.67,0)',
+      }}>
+        {/* Frosted header — map shows through */}
+        <div style={{
+          background: 'rgba(255,255,255,0.72)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: '24px 24px 0 0',
+          borderTop: '1px solid rgba(255,255,255,0.5)',
+          boxShadow: '0 -8px 40px rgba(0,0,0,0.1)',
+          flexShrink: 0,
+          paddingTop: 10,
+        }}>
           {/* Handle */}
-          <button onClick={() => setExpanded(!expanded)} className="w-full flex flex-col items-center pb-2">
-            <div className="w-9 h-1 bg-gray-300/80 rounded-full" />
+          <button onClick={() => setExpanded(!expanded)}
+            style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 0 8px', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.15)', borderRadius: 2 }} />
           </button>
 
-          {/* Header row */}
-          <div className="flex items-center justify-between px-5 pb-3">
+          {/* Title row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px 12px' }}>
             <div>
-              <h2 className="font-black text-gray-900 text-base leading-tight">Ship a Package</h2>
-              <p className="text-gray-500 text-xs mt-0.5">Select delivery type to get started</p>
+              <p style={{ fontWeight: 900, fontSize: 16, color: '#111827', margin: 0, lineHeight: 1.2 }}>Ship a Package</p>
+              <p style={{ fontSize: 12, color: '#6B7280', margin: '3px 0 0' }}>Select delivery type to get started</p>
             </div>
             <button onClick={() => setExpanded(!expanded)}
-              className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center">
-              {expanded ? <ChevronDown size={16} className="text-gray-500"/> : <ChevronUp size={16} className="text-gray-500"/>}
+              style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(0,0,0,0.06)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {expanded
+                ? <ChevronDown size={16} color="#6B7280" />
+                : <ChevronUp size={16} color="#6B7280" />}
             </button>
           </div>
         </div>
 
-        {/* White solid list area */}
-        <div className="flex-1 bg-white overflow-y-auto">
+        {/* Service list — solid white */}
+        <div style={{ flex: 1, background: '#fff', overflowY: 'auto' }}>
           {SERVICES.map((s, i) => (
             <button
               key={s.id}
               onClick={() => navigate(`/customer/orders/create?type=${s.id}`)}
-              className={`w-full flex items-center gap-4 px-5 py-3.5 text-left active:bg-gray-50 transition-colors ${i < SERVICES.length - 1 ? 'border-b border-gray-100' : ''}`}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer',
+                borderBottom: i < SERVICES.length - 1 ? '1px solid #F3F4F6' : 'none',
+                textAlign: 'left',
+              }}
             >
-              {/* Icon */}
-              <div className={`w-12 h-12 ${s.iconBg} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                <span className="text-white">{s.icon}</span>
+              <div className={`w-12 h-12 ${s.iconBg} rounded-2xl flex items-center justify-center flex-shrink-0`}
+                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                <span style={{ color: '#fff' }}>{s.icon}</span>
               </div>
-
-              {/* Text */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-bold text-gray-900 text-sm">{s.title}</p>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <p style={{ fontWeight: 700, fontSize: 14, color: '#111827', margin: 0 }}>{s.title}</p>
                   {s.limit && <span className={`text-[10px] font-bold ${s.limitColor}`}>{s.limit}</span>}
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5 truncate">{s.desc}</p>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="flex items-center gap-1 text-[10px] text-gray-400">
-                    <Clock size={9}/> {s.eta}
+                <p style={{ fontSize: 12, color: '#9CA3AF', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.desc}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 10, color: '#9CA3AF' }}>
+                    <Clock size={9} /> {s.eta}
                   </span>
-                  <span className="text-[10px] font-bold text-gray-700">from {s.price}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>from {s.price}</span>
                 </div>
               </div>
-
-              {/* Arrow */}
-              <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <ArrowRight size={15} className="text-gray-600" />
+              <div style={{ width: 32, height: 32, borderRadius: 10, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <ArrowRight size={15} color="#6B7280" />
               </div>
             </button>
           ))}
 
           {/* Guest CTA */}
           {!user && (
-            <div className="mx-4 my-4 bg-gray-900 rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Package size={18} className="text-white" />
+            <div style={{ margin: '12px 16px 16px', background: '#0A1628', borderRadius: 18, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 36, height: 36, background: 'rgba(255,255,255,0.1)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Package size={18} color="#fff" />
               </div>
-              <div className="flex-1">
-                <p className="text-white text-xs font-bold">Login to track & manage orders</p>
-                <p className="text-white/50 text-xs">Create an account in 30 seconds</p>
+              <div style={{ flex: 1 }}>
+                <p style={{ color: '#fff', fontSize: 12, fontWeight: 700, margin: 0 }}>Login to track & manage orders</p>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, margin: '2px 0 0' }}>Create an account in 30 seconds</p>
               </div>
               <button onClick={() => navigate('/login')}
-                className="bg-white text-gray-900 text-xs font-black px-3 py-2 rounded-xl flex-shrink-0">
+                style={{ background: '#fff', color: '#0A1628', fontSize: 12, fontWeight: 800, padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', flexShrink: 0 }}>
                 Login
               </button>
             </div>
           )}
-
-          {/* Bottom safe area */}
-          <div className="h-4" />
+          <div style={{ height: 16 }} />
         </div>
       </div>
-      {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => () => {}}/>
     </div>
   )
 }
