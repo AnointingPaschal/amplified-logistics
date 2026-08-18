@@ -21,7 +21,7 @@ export function AppProvider({ children }) {
     { id: 'n1', text: 'Your order #ALXK92P is in transit', time: '2m ago', read: false, type: 'order' },
     { id: 'n2', text: 'Rider Emeka is 5 mins away', time: '10m ago', read: false, type: 'rider' },
     { id: 'n3', text: 'Order #ALMP71R delivered successfully!', time: '1h ago', read: true, type: 'success' },
-    { id: 'n4', text: 'Welcome to Amplified Logistics! 🎉', time: '1d ago', read: true, type: 'info' },
+    { id: 'n4', text: 'Welcome to Amplified Logistics!', time: '1d ago', read: true, type: 'info' },
   ]);
   const [chat, setChat] = useState([
     { id: 'c1', text: "I'm on my way to pick up your package", sender: 'rider', time: new Date(Date.now() - 600000).toISOString() },

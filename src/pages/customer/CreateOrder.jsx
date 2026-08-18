@@ -64,7 +64,7 @@ export default function CreateOrder() {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
             <CheckCircle size={40} className="text-green-500" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Order Placed! 🎉</h2>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Order Placed!</h2>
           <p className="text-slate-500 text-sm mb-2">Your order has been created and a rider has been assigned.</p>
           <div className="bg-orange-50 rounded-2xl p-4 my-6 w-full text-left">
             <p className="text-xs text-slate-500 mb-1">Tracking ID</p>

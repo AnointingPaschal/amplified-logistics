@@ -49,7 +49,7 @@ export default function OrderDetail() {
   return (
     <PageLayout
       title="Order Details"
-      headerRight={
+      right={
         <button onClick={copyTracking} className="flex items-center gap-1 text-xs text-orange-500 font-semibold">
           <Copy size={13} /> Copy ID
         </button>

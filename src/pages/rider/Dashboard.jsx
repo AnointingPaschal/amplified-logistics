@@ -52,7 +52,7 @@ export default function RiderDashboard() {
     updateOrderStatus(proofModal.id, 'delivered');
     setProofModal(null);
     setActiveDelivery(null);
-    showToast('Delivery confirmed! 🎉', 'success');
+    showToast('Delivery confirmed!', 'success');
   };
 
   const sendMsg = () => {

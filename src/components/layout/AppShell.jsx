@@ -80,13 +80,13 @@ export function TopBar({ title, back, backTo, right, transparent }) {
           <Avatar name={user?.name} size={34} />
         )}
         <div>
-          {!back && <p className="text-xs text-slate-500">Good morning 👋</p>}
+          {!back && <p className="text-xs text-slate-500">Good morning</p>}
           <h1 className={`font-bold ${back ? 'text-slate-800 text-base' : 'text-slate-900 text-sm'}`}>{title || user?.name?.split(' ')[0]}</h1>
         </div>
       </div>
       <div className="flex items-center gap-2">
         {right}
-        <Link to={`/${user?.role}/notifications`} onClick={markNotificationsRead} className="relative p-2 rounded-full hover:bg-slate-100">
+        <Link to="/notifications" onClick={markNotificationsRead} className="relative p-2 rounded-full hover:bg-slate-100">
           <Bell size={20} className="text-slate-600" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white flex items-center justify-center font-bold">{unreadCount}</span>
@@ -99,12 +99,14 @@ export function TopBar({ title, back, backTo, right, transparent }) {
 
 export function PageLayout({ children, title, back, backTo, right, noNav, noPad }) {
   return (
-    <div className="flex flex-col min-h-dvh bg-slate-50">
-      <TopBar title={title} back={back} backTo={backTo} right={right} />
-      <main className={`flex-1 overflow-y-auto ${noPad ? '' : 'px-4 py-3'} ${noNav ? 'pb-4' : 'pb-24'}`}>
-        {children}
-      </main>
-      {!noNav && <BottomNav />}
+    <div className="min-h-dvh bg-slate-200 flex justify-center">
+      <div className="app-container flex flex-col w-full">
+        <TopBar title={title} back={back} backTo={backTo} right={right} />
+        <main className={`flex-1 overflow-y-auto bg-slate-50 ${noPad ? '' : 'px-4 py-3'} ${noNav ? 'pb-4' : 'pb-24'}`}>
+          {children}
+        </main>
+        {!noNav && <BottomNav />}
+      </div>
     </div>
   );
 }

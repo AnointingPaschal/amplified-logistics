@@ -31,7 +31,7 @@ export default function CustomerDashboard() {
           <div className="flex items-center gap-3">
             <Avatar name={user?.name} size={42} />
             <div>
-              <p className="text-slate-400 text-xs">Good morning 👋</p>
+              <p className="text-slate-400 text-xs">Good morning</p>
               <h2 className="text-white font-bold text-base">{user?.name?.split(' ')[0]}</h2>
             </div>
           </div>

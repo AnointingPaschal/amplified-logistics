@@ -22,11 +22,11 @@ body {
 
 .app-container {
   max-width: 430px;
-  margin: 0 auto;
+  width: 100%;
   min-height: 100dvh;
   background: #fff;
   position: relative;
-  box-shadow: 0 0 60px rgba(0,0,0,0.15);
+  box-shadow: 0 0 40px rgba(0,0,0,0.12);
 }
 
 .leaflet-container { z-index: 1 !important; }
