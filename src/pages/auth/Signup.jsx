@@ -26,12 +26,22 @@ export default function Signup() {
 
   const handleSubmit = async e => {
     e.preventDefault()
+    if (password.length < 6) { setError('Password must be at least 6 characters'); return }
     setLoading(true); setError('')
     try {
       await signup({ email, password, name, phone, role })
       navigate('/customer')
     } catch (err) {
-      setError(err.message || 'Signup failed')
+      const msg = err.message || ''
+      if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists') || msg.includes('already_exists')) {
+        setError('ALREADY_EXISTS')
+      } else if (msg.toLowerCase().includes('invalid email')) {
+        setError('Please enter a valid email address.')
+      } else if (msg.toLowerCase().includes('weak password') || msg.toLowerCase().includes('password')) {
+        setError('Password must be at least 6 characters.')
+      } else {
+        setError(msg || 'Signup failed. Please try again.')
+      }
     } finally { setLoading(false) }
   }
 
@@ -118,7 +128,21 @@ export default function Signup() {
             </div>
           </div>
 
-          {error && <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3"><p className="text-xs text-red-600">{error}</p></div>}
+          {error === 'ALREADY_EXISTS' ? (
+            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
+              <p className="text-sm font-bold text-orange-800 mb-1">Account already exists</p>
+              <p className="text-xs text-orange-600 mb-3">An account with <span className="font-bold">{email}</span> already exists. Sign in instead?</p>
+              <button
+                type="button"
+                onClick={() => navigate(`/login?email=${encodeURIComponent(email)}`)}
+                className="w-full bg-orange-500 text-white font-bold py-2.5 rounded-xl text-sm"
+              >
+                Sign In with this Email
+              </button>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3"><p className="text-xs text-red-600">{error}</p></div>
+          ) : null}
 
           <div className="mt-auto pt-4 pb-8 space-y-3">
             <button type="submit" disabled={loading}

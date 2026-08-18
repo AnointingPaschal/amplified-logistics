@@ -10,7 +10,8 @@ export default function Login() {
   const [params] = useSearchParams()
   const returnTo = params.get('return') || null
 
-  const [email, setEmail]       = useState('')
+  const [searchParams] = useSearchParams()
+  const [email, setEmail]       = useState(searchParams.get('email') || '')
   const [password, setPassword] = useState('')
   const [show, setShow]         = useState(false)
   const [loading, setLoading]   = useState(false)
