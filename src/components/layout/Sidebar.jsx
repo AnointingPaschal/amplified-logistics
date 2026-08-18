@@ -1,90 +1,92 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  X, Home, Package, MapPin, Wallet, User, Gift, HelpCircle,
-  LogOut, Bell, Shield, Settings, BarChart2, Truck, Users,
-  ChevronRight, Bike, Store, LayoutDashboard, FileText,
-  Headphones, Bookmark, Star, Share2, ToggleLeft
+  X, Home, Package, MapPin, Wallet, User, Gift, LogOut, Bell,
+  Shield, BarChart2, Users, Settings, Headphones, Bookmark,
+  Star, ChevronRight, Bike, Store, LayoutDashboard, FileText, Zap
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 
-const ROLE_MENUS = {
+/* ── Role-specific nav sections ─────────────────────── */
+const MENUS = {
   customer: [
-    { section: 'Deliveries', items: [
-      { icon: <Home size={18}/>,     label: 'Home',          path: '/customer' },
-      { icon: <Package size={18}/>,  label: 'My Orders',     path: '/customer/orders' },
-      { icon: <MapPin size={18}/>,   label: 'Track Order',   path: '/customer/track' },
+    { section:'Deliveries', items:[
+      { icon:<Home size={17}/>,     label:'Home',         path:'/customer' },
+      { icon:<Package size={17}/>,  label:'My Orders',    path:'/customer/orders' },
+      { icon:<MapPin size={17}/>,   label:'Track Order',  path:'/customer/track' },
     ]},
-    { section: 'Account', items: [
-      { icon: <Wallet size={18}/>,   label: 'Wallet',        path: '/customer/wallet' },
-      { icon: <Bookmark size={18}/>, label: 'Address Book',  path: '/customer/addresses' },
-      { icon: <Bell size={18}/>,     label: 'Notifications', path: '/notifications' },
-      { icon: <Shield size={18}/>,   label: 'Privacy',       path: null, soon: true },
+    { section:'Account', items:[
+      { icon:<Wallet size={17}/>,   label:'Wallet',       path:'/customer/wallet' },
+      { icon:<Bookmark size={17}/>, label:'Address Book', path:'/customer/addresses' },
+      { icon:<Bell size={17}/>,     label:'Notifications',path:'/notifications' },
     ]},
-    { section: 'Rewards & More', items: [
-      { icon: <Gift size={18}/>,     label: 'Referral Program', path: '/customer/referral', badge: '₦500' },
-      { icon: <Star size={18}/>,     label: 'Promo Codes',      path: '/customer/promo' },
-      { icon: <Headphones size={18}/>,label:'Help & Support',   path: '/customer/support' },
+    { section:'Rewards', items:[
+      { icon:<Gift size={17}/>,     label:'Refer & Earn', path:'/customer/referral', badge:'₦500' },
+      { icon:<Star size={17}/>,     label:'Promo Codes',  path:'/customer/promo' },
+      { icon:<Headphones size={17}/>,label:'Help Center', path:'/customer/support' },
     ]},
   ],
   rider: [
-    { section: 'Work', items: [
-      { icon: <Home size={18}/>,     label: 'Dashboard',     path: '/rider' },
-      { icon: <Package size={18}/>,  label: 'Deliveries',    path: '/rider/deliveries' },
-      { icon: <MapPin size={18}/>,   label: 'Map',           path: '/rider/map' },
-      { icon: <Wallet size={18}/>,   label: 'Earnings',      path: '/rider/earnings' },
+    { section:'Work', items:[
+      { icon:<Home size={17}/>,     label:'Dashboard',    path:'/rider' },
+      { icon:<Package size={17}/>,  label:'Deliveries',   path:'/rider/deliveries' },
+      { icon:<MapPin size={17}/>,   label:'Map',          path:'/rider/map' },
+      { icon:<Wallet size={17}/>,   label:'Earnings',     path:'/rider/earnings' },
+      { icon:<User size={17}/>,     label:'My Profile',   path:'/rider/profile' },
     ]},
-    { section: 'Account', items: [
-      { icon: <User size={18}/>,     label: 'My Profile',    path: '/rider/profile' },
-      { icon: <Bell size={18}/>,     label: 'Notifications', path: '/notifications' },
-      { icon: <Headphones size={18}/>,label:'Support',        path: '/customer/support' },
+    { section:'Support', items:[
+      { icon:<Bell size={17}/>,     label:'Notifications',path:'/notifications' },
+      { icon:<Headphones size={17}/>,label:'Help',        path:'/customer/support' },
     ]},
   ],
   merchant: [
-    { section: 'Business', items: [
-      { icon: <LayoutDashboard size={18}/>, label:'Dashboard', path:'/merchant' },
-      { icon: <Package size={18}/>,  label: 'Orders',        path: '/merchant/orders' },
-      { icon: <BarChart2 size={18}/>,label: 'Analytics',     path: '/merchant/analytics' },
-      { icon: <Wallet size={18}/>,   label: 'Payments',      path: '/merchant/wallet' },
-    ]},
-    { section: 'Account', items: [
-      { icon: <Store size={18}/>,    label: 'Business Profile', path: '/merchant/profile' },
-      { icon: <Bell size={18}/>,     label: 'Notifications',    path: '/notifications' },
-      { icon: <Headphones size={18}/>,label:'Support',           path: '/customer/support' },
+    { section:'Business', items:[
+      { icon:<LayoutDashboard size={17}/>, label:'Dashboard', path:'/merchant' },
+      { icon:<Package size={17}/>,   label:'Orders',      path:'/merchant/orders' },
+      { icon:<BarChart2 size={17}/>, label:'Analytics',   path:'/merchant/analytics' },
+      { icon:<Wallet size={17}/>,    label:'Payments',    path:'/merchant/wallet' },
+      { icon:<Store size={17}/>,     label:'Profile',     path:'/merchant/profile' },
     ]},
   ],
   admin: [
-    { section: 'Operations', items: [
-      { icon: <LayoutDashboard size={18}/>, label:'Overview',    path:'/admin' },
-      { icon: <MapPin size={18}/>,   label: 'Live Map',      path: '/admin/map' },
-      { icon: <Package size={18}/>,  label: 'All Orders',    path: '/admin/orders' },
-      { icon: <Users size={18}/>,    label: 'Users',         path: '/admin/users' },
-      { icon: <BarChart2 size={18}/>,label: 'Analytics',     path: '/admin/analytics' },
+    { section:'Admin', items:[
+      { icon:<LayoutDashboard size={17}/>, label:'Overview',  path:'/admin' },
+      { icon:<MapPin size={17}/>,    label:'Live Map',     path:'/admin/map' },
+      { icon:<Package size={17}/>,   label:'All Orders',   path:'/admin/orders' },
+      { icon:<Users size={17}/>,     label:'Users',        path:'/admin/users' },
+      { icon:<BarChart2 size={17}/>, label:'Analytics',    path:'/admin/analytics' },
     ]},
   ],
 }
 
 const GUEST_MENU = [
-  { section: 'Get Started', items: [
-    { icon: <Home size={18}/>,     label: 'Home',            path: '/' },
-    { icon: <Package size={18}/>,  label: 'Send a Package',  path: '/customer/orders/create?type=standard' },
-    { icon: <Headphones size={18}/>, label: 'Help Center',   path: '/customer/support' },
+  { section:'Get Started', items:[
+    { icon:<Home size={17}/>,      label:'Home',           path:'/' },
+    { icon:<Package size={17}/>,   label:'Send a Package', path:'/customer/orders/create?type=standard' },
+    { icon:<MapPin size={17}/>,    label:'Track an Order', path:'/customer/track' },
+    { icon:<Headphones size={17}/>,label:'Help Center',    path:'/customer/support' },
   ]},
 ]
 
+/* ── Main Sidebar (right drawer) ────────────────────── */
 export default function Sidebar({ open, onClose }) {
   const { user, logout, showToast } = useApp()
   const navigate = useNavigate()
-
   const role = user?.user_metadata?.role || user?.role || 'customer'
-  const menuSections = user ? (ROLE_MENUS[role] || ROLE_MENUS.customer) : GUEST_MENU
-
+  const sections = user ? (MENUS[role] || MENUS.customer) : GUEST_MENU
   const initials = (user?.user_metadata?.name || user?.email || 'G')
     .split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+
+  // Lock body scroll when open
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [open])
 
   const go = (path) => {
     if (!path) { showToast('Coming soon!', 'info'); return }
     onClose()
-    setTimeout(() => navigate(path), 180)
+    setTimeout(() => navigate(path), 200)
   }
 
   const handleLogout = async () => {
@@ -94,92 +96,96 @@ export default function Sidebar({ open, onClose }) {
     showToast('Logged out', 'info')
   }
 
-  if (!open) return null
-
   return (
-    <div className="fixed inset-0 z-[500] flex justify-end max-w-[430px] mx-auto left-1/2 -translate-x-1/2" style={{ maxWidth: 430 }}>
-      {/* Backdrop */}
+    <>
+      {/* ── Backdrop ── */}
       <div
-        className="absolute inset-0 bg-black/50"
-        style={{ animation: 'fade-in .2s ease' }}
         onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 998,
+          background: 'rgba(0,0,0,0.55)',
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+          transition: 'opacity 0.25s ease',
+        }}
       />
 
-      {/* Drawer — slides from right */}
+      {/* ── Drawer (right side) ── */}
       <div
-        className="relative w-[85%] max-w-[340px] bg-white h-full flex flex-col shadow-2xl overflow-hidden"
-        style={{ animation: 'slideInRight .25s cubic-bezier(.32,0,.67,0)' }}
+        style={{
+          position: 'fixed', top: 0, right: 0, bottom: 0,
+          width: '82%', maxWidth: 320,
+          zIndex: 999,
+          background: '#fff',
+          boxShadow: '-8px 0 40px rgba(0,0,0,0.18)',
+          transform: open ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.28s cubic-bezier(0.32,0,0.67,0)',
+          display: 'flex', flexDirection: 'column',
+          overflowY: 'auto',
+        }}
       >
         {/* Header */}
-        <div className="bg-gray-900 px-5 pt-10 pb-6 flex-shrink-0">
-          <div className="flex items-start justify-between mb-4">
-            {user ? (
-              <button onClick={() => go(`/${role}/profile`)} className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center border border-white/20">
-                  <span className="text-white font-black text-base">{initials}</span>
-                </div>
-                <div className="text-left">
-                  <p className="text-white font-bold text-sm leading-tight">
+        <div style={{ background: '#0A1628', padding: '40px 20px 20px', flexShrink: 0 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom: 16 }}>
+            <div style={{ display:'flex', alignItems:'center', gap: 12 }}>
+              <div style={{ width:48, height:48, borderRadius:14, background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <span style={{ color:'#fff', fontWeight:900, fontSize:16 }}>{initials}</span>
+              </div>
+              {user ? (
+                <div>
+                  <p style={{ color:'#fff', fontWeight:700, fontSize:14, lineHeight:1.2 }}>
                     {user.user_metadata?.name || user.email?.split('@')[0]}
                   </p>
-                  <p className="text-white/50 text-xs mt-0.5 truncate max-w-[160px]">{user.email}</p>
-                  <span className="text-[10px] bg-white/15 text-white/80 px-2 py-0.5 rounded-full capitalize mt-1 inline-block">
-                    {role}
-                  </span>
+                  <p style={{ color:'rgba(255,255,255,0.5)', fontSize:11, marginTop:2 }}>{user.email}</p>
+                  <span style={{ background:'rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.7)', fontSize:10, padding:'2px 8px', borderRadius:20, display:'inline-block', marginTop:4, textTransform:'capitalize' }}>{role}</span>
                 </div>
-              </button>
-            ) : (
-              <div>
-                <p className="text-white font-black text-lg">Welcome!</p>
-                <p className="text-white/50 text-xs mt-0.5">Sign in to manage orders</p>
-              </div>
-            )}
-            <button onClick={onClose} className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center mt-1">
-              <X size={16} className="text-white/80" />
+              ) : (
+                <div>
+                  <p style={{ color:'#fff', fontWeight:900, fontSize:16 }}>amplified</p>
+                  <p style={{ color:'rgba(255,255,255,0.5)', fontSize:11 }}>Sign in to manage orders</p>
+                </div>
+              )}
+            </div>
+            <button onClick={onClose} style={{ width:32, height:32, borderRadius:'50%', background:'rgba(255,255,255,0.1)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0 }}>
+              <X size={16} color="rgba(255,255,255,0.8)"/>
             </button>
           </div>
 
-          {/* Auth CTA for guests */}
           {!user && (
-            <div className="flex gap-2 mt-2">
+            <div style={{ display:'flex', gap:8 }}>
               <button onClick={() => go('/login')}
-                className="flex-1 bg-white/15 text-white font-bold py-2.5 rounded-xl text-xs text-center">
+                style={{ flex:1, background:'rgba(255,255,255,0.12)', color:'#fff', fontWeight:700, fontSize:12, padding:'10px 0', borderRadius:12, border:'none', cursor:'pointer' }}>
                 Login
               </button>
               <button onClick={() => go('/signup')}
-                className="flex-1 bg-white text-gray-900 font-bold py-2.5 rounded-xl text-xs text-center">
+                style={{ flex:1, background:'#fff', color:'#0A1628', fontWeight:800, fontSize:12, padding:'10px 0', borderRadius:12, border:'none', cursor:'pointer' }}>
                 Sign Up
               </button>
             </div>
           )}
         </div>
 
-        {/* Nav items */}
-        <div className="flex-1 overflow-y-auto py-3">
-          {menuSections.map(sec => (
-            <div key={sec.section} className="mb-2">
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-2">
+        {/* Nav */}
+        <div style={{ flex:1, overflowY:'auto', padding:'8px 0' }}>
+          {sections.map(sec => (
+            <div key={sec.section}>
+              <p style={{ fontSize:10, fontWeight:800, color:'#9CA3AF', textTransform:'uppercase', letterSpacing:'0.08em', padding:'12px 20px 6px' }}>
                 {sec.section}
               </p>
               {sec.items.map(item => (
-                <button
-                  key={item.label}
-                  onClick={() => item.soon ? showToast('Coming soon!', 'info') : go(item.path)}
-                  className="w-full flex items-center gap-3 px-5 py-3 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left"
+                <button key={item.label} onClick={() => go(item.path)}
+                  style={{ width:'100%', display:'flex', alignItems:'center', gap:12, padding:'12px 20px', background:'none', border:'none', cursor:'pointer', textAlign:'left', transition:'background 0.1s' }}
+                  onMouseEnter={e => e.currentTarget.style.background='#F9FAFB'}
+                  onMouseLeave={e => e.currentTarget.style.background='none'}
                 >
-                  <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-gray-600">
+                  <div style={{ width:36, height:36, borderRadius:10, background:'#F3F4F6', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, color:'#4B5563' }}>
                     {item.icon}
                   </div>
-                  <span className="flex-1 text-sm font-semibold text-gray-800">{item.label}</span>
+                  <span style={{ flex:1, fontSize:14, fontWeight:600, color:'#111827' }}>{item.label}</span>
                   {item.badge && (
-                    <span className="bg-green-100 text-green-700 text-[10px] font-black px-2 py-0.5 rounded-full">
-                      {item.badge}
-                    </span>
+                    <span style={{ background:'#DCFCE7', color:'#166534', fontSize:10, fontWeight:800, padding:'2px 8px', borderRadius:20 }}>{item.badge}</span>
                   )}
-                  {item.soon && (
-                    <span className="text-[10px] text-gray-400 font-semibold">Soon</span>
-                  )}
-                  <ChevronRight size={14} className="text-gray-300 flex-shrink-0" />
+                  <ChevronRight size={14} color="#D1D5DB"/>
                 </button>
               ))}
             </div>
@@ -187,19 +193,22 @@ export default function Sidebar({ open, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-100 px-4 py-4 flex-shrink-0 space-y-1">
+        <div style={{ borderTop:'1px solid #F3F4F6', padding:'8px 12px 24px', flexShrink:0 }}>
           {user && (
             <button onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 transition-colors text-left">
-              <div className="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <LogOut size={16} className="text-red-500" />
+              style={{ width:'100%', display:'flex', alignItems:'center', gap:12, padding:'12px', borderRadius:12, background:'none', border:'none', cursor:'pointer' }}
+              onMouseEnter={e => e.currentTarget.style.background='#FEF2F2'}
+              onMouseLeave={e => e.currentTarget.style.background='none'}
+            >
+              <div style={{ width:36, height:36, borderRadius:10, background:'#FEE2E2', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <LogOut size={16} color="#EF4444"/>
               </div>
-              <span className="text-sm font-bold text-red-600">Log Out</span>
+              <span style={{ fontSize:14, fontWeight:700, color:'#EF4444' }}>Log Out</span>
             </button>
           )}
-          <p className="text-center text-[10px] text-gray-300 pt-1">Amplified Logistics v1.0</p>
+          <p style={{ textAlign:'center', fontSize:10, color:'#D1D5DB', marginTop:8 }}>Amplified Logistics v1.0</p>
         </div>
       </div>
-    </div>
+    </>
   )
 }

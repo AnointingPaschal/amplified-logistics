@@ -90,11 +90,11 @@ export function TopBar({ title, back, backTo, right, transparent }) {
             <ChevronLeft size={20} className="text-gray-700"/>
           </button>
         ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
+          <button onClick={() => setSidebarOpen(true)} className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
             <span className="text-white font-black text-xs">
               {(user?.user_metadata?.name||user?.email||'G').charAt(0).toUpperCase()}
             </span>
-          </div>
+          </button>
         )}
         <h1 className={`font-bold ${back?'text-gray-900 text-base':'text-sm text-gray-800'}`}>
           {title||(user?.user_metadata?.name?.split(' ')[0]||'Home')}

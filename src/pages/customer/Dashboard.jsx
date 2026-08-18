@@ -80,9 +80,9 @@ export default function CustomerDashboard() {
         <div className="flex items-center justify-between px-4 pt-3 pb-6">
           {/* Avatar + greeting */}
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm flex items-center justify-center">
+            <button onClick={() => setSidebarOpen(true)} className="w-9 h-9 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm flex items-center justify-center">
               <span className="text-white font-black text-xs">{initials}</span>
-            </div>
+            </button>
             <div>
               <p className="text-white/50 text-[10px] leading-none">Good Morning</p>
               <p className="text-white font-bold text-sm">{user?.name || 'Guest User'}</p>
