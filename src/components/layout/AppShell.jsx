@@ -69,7 +69,7 @@ export function BottomNav() {
 }
 
 export function TopBar({ title, back, backTo, right, transparent }) {
-  const { user, unreadCount, markAllRead, openSidebar } = useApp()
+  const { user, unreadCount, markAllRead } = useApp()
   const navigate = useNavigate()
 
   const bg = transparent
@@ -87,11 +87,11 @@ export function TopBar({ title, back, backTo, right, transparent }) {
             <ChevronLeft size={20} className="text-gray-700"/>
           </button>
         ) : (
-          <button onClick={() => openSidebar()} className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
             <span className="text-white font-black text-xs">
               {(user?.user_metadata?.name||user?.email||'G').charAt(0).toUpperCase()}
             </span>
-          </button>
+          </div>
         )}
         <h1 className={`font-bold ${back?'text-gray-900 text-base':'text-sm text-gray-800'}`}>
           {title||(user?.user_metadata?.name?.split(' ')[0]||'Home')}
@@ -110,17 +110,11 @@ export function TopBar({ title, back, backTo, right, transparent }) {
                 </span>
               )}
             </button>
-            <button onClick={() => openSidebar()}
-              className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-              </svg>
-            </button>
+
           </>
         )}
       </div>
     </div>
-    <Sidebar open={sidebarOpen} onClose={() => () => {}}/>
     </>
   )
 }
