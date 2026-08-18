@@ -72,8 +72,9 @@ function AppRoutes() {
     <>
       <ToastWrapper />
       <Routes>
-        {/* Public */}
-        <Route path="/" element={<Landing />} />
+        {/* Root = map + shipment type (guest-friendly) */}
+        <Route path="/" element={<CustomerDashboard />} />
+        <Route path="/landing" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<RoleRedirect />} />

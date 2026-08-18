@@ -76,16 +76,35 @@ export default function CustomerDashboard() {
             </div>
           </div>
           {/* Actions */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => navigate('/notifications')}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10"
-            >
-              <Bell size={20} />
-            </button>
-            <button className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10">
-              <Menu size={20} />
-            </button>
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                <button
+                  onClick={() => navigate('/notifications')}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10"
+                >
+                  <Bell size={20} />
+                </button>
+                <button className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10">
+                  <Menu size={20} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-white/80 text-sm font-semibold px-3 py-1.5 rounded-xl hover:bg-white/10"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="bg-white text-navy-900 text-sm font-bold px-3 py-1.5 rounded-xl"
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
