@@ -4,7 +4,7 @@ import { Package, Users, Bike, Wallet, TrendingUp, Clock, CheckCircle, AlertCirc
 import { Card, Stat, Badge, Table, PageHeader } from '../components/ui'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
-const STATUS_COLOR = { pending:'amber', assigned:'blue', in_transit:'navy', delivered:'green', cancelled:'red' }
+const STATUS_COLOR = { pending:'amber', accepted:'blue', pickup:'blue', transit:'navy', delivered:'green', cancelled:'red' }
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ orders:0, customers:0, riders:0, revenue:0, pending:0, delivered:0, cancelled:0 })
@@ -59,7 +59,7 @@ export default function Dashboard() {
     { key:'tracking_id', label:'Tracking ID', render: v => <span style={{ fontWeight:700, color:'var(--navy)', fontFamily:'monospace' }}>{v}</span> },
     { key:'service_type', label:'Service', render: v => <Badge color={v==='heavy'?'navy':v==='bulk'?'amber':'blue'}>{v}</Badge> },
     { key:'pickup_address', label:'Pickup', wrap:true, render: v => <span style={{ maxWidth:160, display:'block', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{v}</span> },
-    { key:'status', label:'Status', render: v => <Badge color={STATUS_COLOR[v]||'gray'}>{v?.replace('_',' ')}</Badge> },
+    { key:'status', label:'Status', render: v => <Badge color={STATUS_COLOR[v]||'gray'}>{v}</Badge> },
     { key:'price', label:'Amount', render: v => <span style={{ fontWeight:700 }}>{fmt(v)}</span> },
     { key:'created_at', label:'Date', render: v => fmtDate(v) },
   ]
