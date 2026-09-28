@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 const AuthContext = createContext({})
 export const useAuth = () => useContext(AuthContext)
 
-const ADMIN_EMAILS = ['ozoemenapaschal09@gmail.com', 'admin@amplifiedlogistics.com']
+const ADMIN_EMAILS = ['ozoemenapaschal09@gmail.com', 'admin@amplifiedlogistics.com', 'amplifiedlogistics@gmail.com']
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
