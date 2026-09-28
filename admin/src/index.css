@@ -21,3 +21,25 @@ input, select, textarea { font-family: inherit; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+
+/* Mobile responsive overrides */
+@media (max-width: 767px) {
+  /* Make all overflow tables scroll horizontally */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Tighten grid columns on small screens */
+  [style*="gridTemplateColumns: repeat(auto-fit"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Single column grids on very small */
+  [style*="gridTemplateColumns: repeat(3,1fr)"],
+  [style*="gridTemplateColumns: 1.5fr 1fr"],
+  [style*="gridTemplateColumns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  [style*="gridTemplateColumns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}

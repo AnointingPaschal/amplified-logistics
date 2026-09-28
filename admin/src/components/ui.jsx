@@ -96,14 +96,15 @@ export function Btn({ children, onClick, variant='primary', size='md', loading, 
 
 export function Modal({ open, onClose, title, children, width=560 }) {
   if (!open) return null
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.5)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:20 }} onClick={onClose}>
-      <div style={{ background:'#fff', borderRadius:20, width:'100%', maxWidth:width, maxHeight:'90vh', overflow:'auto' }} onClick={e => e.stopPropagation()}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 24px', borderBottom:'1px solid var(--border)' }}>
-          <h3 style={{ fontSize:17, fontWeight:800, color:'var(--navy)' }}>{title}</h3>
-          <button onClick={onClose} style={{ fontSize:22, color:'var(--text-light)', lineHeight:1 }}>×</button>
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.5)', zIndex:1000, display:'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent:'center', padding: isMobile ? 0 : 16 }} onClick={onClose}>
+      <div style={{ background:'#fff', borderRadius: isMobile ? '20px 20px 0 0' : 20, width:'100%', maxWidth: isMobile ? '100%' : width, maxHeight: isMobile ? '92vh' : '90vh', overflow:'auto' }} onClick={e => e.stopPropagation()}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 20px', borderBottom:'1px solid var(--border)', position:'sticky', top:0, background:'#fff', zIndex:1 }}>
+          <h3 style={{ fontSize:16, fontWeight:800, color:'var(--navy)' }}>{title}</h3>
+          <button onClick={onClose} style={{ fontSize:22, color:'var(--text-light)', lineHeight:1, padding:'0 4px' }}>×</button>
         </div>
-        <div style={{ padding:24 }}>{children}</div>
+        <div style={{ padding: isMobile ? '16px 16px 32px' : 24 }}>{children}</div>
       </div>
     </div>
   )
@@ -128,12 +129,12 @@ export function Select({ children, ...p }) {
 
 export function PageHeader({ title, sub, action }) {
   return (
-    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:24 }}>
+    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:12 }}>
       <div>
-        <h1 style={{ fontSize:22, fontWeight:900, color:'var(--navy)' }}>{title}</h1>
-        {sub && <p style={{ fontSize:13, color:'var(--text-light)', marginTop:4 }}>{sub}</p>}
+        <h1 style={{ fontSize:20, fontWeight:900, color:'var(--navy)' }}>{title}</h1>
+        {sub && <p style={{ fontSize:12, color:'var(--text-light)', marginTop:3 }}>{sub}</p>}
       </div>
-      {action}
+      {action && <div style={{ flexShrink:0 }}>{action}</div>}
     </div>
   )
 }
